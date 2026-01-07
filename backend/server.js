@@ -6,29 +6,27 @@ const Todo = require("./models/Todo");
 
 const app = express();
 
-// Middleware
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Atlas Connection
+// ================= MONGODB CONNECTION =================
 mongoose
-  .connect(
-    "mongodb+srv://todoDB:todo%40123@myapp-cluster.ps67pw8.mongodb.net/todoDB"
-  )
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Atlas connected"))
-  .catch((err) => console.error(err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
-// Test Route
-app.get("/", (req, res) => {
+// ================= TEST ROUTE =================
+app.get("/api", (req, res) => {
   res.send("To-Do Backend Running");
 });
+
+// ================= CRUD ROUTES =================
 
 // CREATE Todo
 app.post("/todos", async (req, res) => {
   try {
-    const todo = new Todo({
-      task: req.body.task
-    });
+    const todo = new Todo({ task: req.body.task });
     await todo.save();
     res.status(201).json(todo);
   } catch (error) {
@@ -60,7 +58,6 @@ app.put("/todos/:id", async (req, res) => {
   }
 });
 
-
 // DELETE Todo
 app.delete("/todos/:id", async (req, res) => {
   try {
@@ -71,15 +68,15 @@ app.delete("/todos/:id", async (req, res) => {
   }
 });
 
-// Start Server
-const PORT = 3000;
-// Serve Frontend
+// ================= SERVE FRONTEND =================
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
+// ================= START SERVER =================
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
