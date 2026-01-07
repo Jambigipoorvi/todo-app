@@ -68,7 +68,7 @@ app.delete("/todos/:id", async (req, res) => {
   }
 });
 
-// ================= SERVE FRONTEND =================
+// Serve Frontend (IMPORTANT)
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 app.get("*", (req, res) => {
